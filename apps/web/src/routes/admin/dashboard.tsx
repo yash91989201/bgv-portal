@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import UserMenu from "@/components/user-menu";
+import AddCandidateModal from "@/components/admin/add-candidate-modal";
+import CandidateDirectory from "@/components/admin/candidate-directory";
+import StatsCards from "@/components/admin/stats-cards";
 
 export const Route = createFileRoute("/admin/dashboard")({
 	component: AdminDashboard,
@@ -8,14 +10,13 @@ export const Route = createFileRoute("/admin/dashboard")({
 
 function AdminDashboard() {
 	return (
-		<div className="container mx-auto max-w-3xl px-4 py-8">
-			<div className="flex items-center justify-between mb-8">
-				<h1 className="text-3xl font-bold">Admin Dashboard</h1>
-				<UserMenu />
+		<div className="space-y-6 p-6">
+			<StatsCards />
+			<div className="flex items-center justify-between">
+				<h2 className="text-xl font-semibold">Enterprise directory</h2>
+				<AddCandidateModal />
 			</div>
-			<p className="text-muted-foreground">
-				Admin dashboard content will be added in a future change.
-			</p>
+			<CandidateDirectory />
 		</div>
 	);
 }
