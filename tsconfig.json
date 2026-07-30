@@ -1,0 +1,3 @@
+{
+  "extends": "@bgv-portal/config/tsconfig.base.json"
+}

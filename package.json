@@ -1,0 +1,53 @@
+{
+  "name": "bgv-portal",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "packages/*"
+    ],
+    "catalog": {
+      "dotenv": "^17.4.2",
+      "zod": "^4.4.3",
+      "typescript": "^6.0.3",
+      "lucide-react": "^1.27.0",
+      "next-themes": "^0.4.6",
+      "react": "^19.2.8",
+      "react-dom": "^19.2.8",
+      "sonner": "^2.0.7",
+      "tailwindcss": "^4.3.3",
+      "convex": "^1.42.3",
+      "better-auth": "1.6.25",
+      "@convex-dev/better-auth": "^0.12.5",
+      "@types/react": "^19.2.17",
+      "@types/react-dom": "^19.2.3"
+    }
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "nx run-many -t dev",
+    "build": "nx run-many -t build",
+    "check-types": "nx run-many -t check-types",
+    "dev:web": "nx run-many -t dev --projects=web",
+    "dev:server": "nx run-many -t dev --projects=@bgv-portal/backend",
+    "dev:setup": "nx run-many -t dev:setup --projects=@bgv-portal/backend",
+    "docker:build": "docker compose build",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
+    "check": "biome check --write ."
+  },
+  "dependencies": {
+    "@bgv-portal/env": "workspace:*",
+    "dotenv": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@bgv-portal/config": "workspace:*",
+    "@biomejs/biome": "^2.5.6",
+    "@types/node": "^22.20.1",
+    "nx": "^23.1.0",
+    "typescript": "catalog:"
+  },
+  "packageManager": "bun@1.3.14"
+}
