@@ -1,6 +1,5 @@
 import { createFormHook, createFormHookContexts } from "@tanstack/react-form";
 import { FormCheckbox } from "./form-checkbox";
-import { FormFileInput } from "./form-file-input";
 import { FormInput } from "./form-input";
 import {
   FormInputGroup,
@@ -24,7 +23,6 @@ const { useAppForm, withForm, withFieldGroup } = createFormHook({
     Textarea: FormTextarea,
     Select: FormSelect,
     Checkbox: FormCheckbox,
-    FileInput: FormFileInput,
   },
   formComponents: {},
   fieldContext,
