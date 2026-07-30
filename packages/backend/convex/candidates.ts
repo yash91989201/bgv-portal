@@ -245,3 +245,38 @@ export const getStatusHistory = query({
 			.collect();
 	},
 });
+
+// --- 2.9 getMyCandidateProfile ---
+
+export const getMyCandidateProfile = query({
+	args: {},
+	handler: async (ctx) => {
+		const user = await authComponent.safeGetAuthUser(ctx);
+		if (!user) return null;
+		const candidate = await ctx.db
+			.query("candidates")
+			.withIndex("by_userId", (q) => q.eq("userId", user._id))
+			.unique();
+		return candidate ?? null;
+	},
+});
+
+// --- 2.10 getMyStatusHistory ---
+
+export const getMyStatusHistory = query({
+	args: {},
+	handler: async (ctx) => {
+		const user = await authComponent.safeGetAuthUser(ctx);
+		if (!user) return [];
+		const candidate = await ctx.db
+			.query("candidates")
+			.withIndex("by_userId", (q) => q.eq("userId", user._id))
+			.unique();
+		if (!candidate) return [];
+		return await ctx.db
+			.query("statusEvents")
+			.withIndex("by_candidateId", (q) => q.eq("candidateId", candidate._id))
+			.order("desc")
+			.collect();
+	},
+});
