@@ -7,6 +7,7 @@ services:
       dockerfile: apps/web/Dockerfile
       args:
         VITE_CONVEX_URL: ${VITE_CONVEX_URL:-}
+        VITE_CONVEX_SITE_URL: ${VITE_CONVEX_SITE_URL:-}
     init: true
     ports:
       - "32101:3001"
