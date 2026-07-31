@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-import LoginForm from "@/components/login-form";
+import LoginPage from "@/components/login-page";
 import { getAuthUser } from "@/lib/auth-user";
 
 export const Route = createFileRoute("/")({
@@ -22,5 +22,5 @@ export const Route = createFileRoute("/")({
 });
 
 function HomeComponent() {
-	return <LoginForm />;
+	return <LoginPage />;
 }
