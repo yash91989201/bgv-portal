@@ -10,7 +10,6 @@ import {
 	Scripts,
 	useRouteContext,
 } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { createServerFn } from "@tanstack/react-start";
 import { authClient } from "@/lib/auth-client";
 import { getToken } from "@/lib/auth-server";
@@ -79,7 +78,6 @@ function RootDocument() {
 						</div>
 					</TooltipProvider>
 					<Toaster richColors />
-					<TanStackRouterDevtools position="bottom-left" />
 					<Scripts />
 				</body>
 			</html>
