@@ -9,8 +9,8 @@
 		"dev:setup": "convex dev --configure --until-success"
 	},
 	"dependencies": {
-		"@convex-dev/better-auth": "^0.12.3",
-		"better-auth": "^1.6.19",
+		"@convex-dev/better-auth": "0.12.3",
+		"better-auth": "1.6.19",
 		"convex": "^1.42.3",
 		"dotenv": "^17.4.2",
 		"zod": "^4.4.3"
