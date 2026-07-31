@@ -31,6 +31,7 @@ export default defineSchema({
 		offeredDepartment: v.string(),
 		expectedLocation: v.string(),
 		salaryOffered: v.number(),
+		adminRemarks: v.optional(v.string()),
 		currentStage: stageValidator,
 	}).index("by_userId", ["userId"]),
 

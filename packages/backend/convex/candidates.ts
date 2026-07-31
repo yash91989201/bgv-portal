@@ -151,6 +151,7 @@ export const updateCandidateInfo = mutation({
 		offeredDepartment: v.optional(v.string()),
 		expectedLocation: v.optional(v.string()),
 		salaryOffered: v.optional(v.number()),
+		adminRemarks: v.optional(v.string()),
 	},
 	handler: async (ctx, args) => {
 		await requireAdmin(ctx);
