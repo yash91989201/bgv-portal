@@ -1,5 +1,6 @@
 import { api } from "@bgv-portal/backend/convex/_generated/api";
 import { STAGES, stageIndex } from "@bgv-portal/backend/convex/lib/stages";
+import { Badge } from "@bgv-portal/ui/components/badge";
 import {
 	Card,
 	CardContent,
@@ -18,18 +19,16 @@ import {
 	TabsList,
 	TabsTrigger,
 } from "@bgv-portal/ui/components/tabs";
-import { Badge } from "@bgv-portal/ui/components/badge";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-
-import { getAuthUser } from "@/lib/auth-user";
 import UserMenu from "@/components/user-menu";
+import { getAuthUser } from "@/lib/auth-user";
 
-export const Route = createFileRoute("/portal")({
+export const Route = createFileRoute("/(app)/portal")({
 	beforeLoad: async () => {
 		const user = await getAuthUser();
 		if (!user) {
-			throw redirect({ to: "/login" });
+			throw redirect({ to: "/" });
 		}
 		// ponytail: role not typed until backend regen; runtime check
 		if ("role" in user && (user as { role?: unknown }).role === "admin") {
@@ -72,8 +71,8 @@ function PortalPage() {
 
 	return (
 		<div className="container mx-auto max-w-3xl px-4 py-8">
-			<div className="flex items-center justify-between mb-8">
-				<h1 className="text-3xl font-bold">Candidate Portal</h1>
+			<div className="mb-8 flex items-center justify-between">
+				<h1 className="font-bold text-3xl">Candidate Portal</h1>
 				<UserMenu />
 			</div>
 
@@ -104,7 +103,7 @@ function PortalPage() {
 							<CardTitle>Application Journey</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<div className="relative ml-3 border-l-2 border-muted pl-6 space-y-6">
+							<div className="relative ml-3 space-y-6 border-muted border-l-2 pl-6">
 								{STAGES.map((stage, idx) => {
 									const event = eventsByStage.get(stage);
 									const isCompleted = !!event && idx !== currentIdx;
@@ -114,7 +113,7 @@ function PortalPage() {
 									return (
 										<div key={stage} className="relative">
 											<div
-												className={`absolute -left-[31px] top-0.5 h-3 w-3 rounded-full border-2 ${
+												className={`absolute top-0.5 -left-[31px] h-3 w-3 rounded-full border-2 ${
 													isCompleted
 														? "border-green-500 bg-green-500"
 														: isCurrent
@@ -125,21 +124,21 @@ function PortalPage() {
 											<div className="flex items-start justify-between gap-2">
 												<div>
 													<p
-														className={`text-sm font-medium ${
+														className={`font-medium text-sm ${
 															isUpcoming ? "text-muted-foreground" : ""
 														}`}
 													>
 														{stage}
 													</p>
 													{event?._creationTime && (
-														<p className="text-xs text-muted-foreground mt-0.5">
+														<p className="mt-0.5 text-muted-foreground text-xs">
 															{new Date(
 																event._creationTime,
 															).toLocaleDateString()}
 														</p>
 													)}
 													{event?.note && (
-														<p className="text-xs text-muted-foreground mt-0.5 italic">
+														<p className="mt-0.5 text-muted-foreground text-xs italic">
 															{event.note}
 														</p>
 													)}

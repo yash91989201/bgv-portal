@@ -23,11 +23,11 @@ import {
 import UserMenu from "@/components/user-menu";
 import { getAuthUser } from "@/lib/auth-user";
 
-export const Route = createFileRoute("/admin")({
+export const Route = createFileRoute("/(app)/admin")({
 	beforeLoad: async () => {
 		const user = await getAuthUser();
 		if (!user) {
-			throw redirect({ to: "/login" });
+			throw redirect({ to: "/" });
 		}
 		// ponytail: role not typed until backend regen; runtime check
 		if (!("role" in user) || (user as { role?: unknown }).role !== "admin") {

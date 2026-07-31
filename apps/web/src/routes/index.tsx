@@ -1,15 +1,19 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
+import LoginForm from "@/components/login-form";
 import { getAuthUser } from "@/lib/auth-user";
 
 export const Route = createFileRoute("/")({
 	beforeLoad: async () => {
 		const user = await getAuthUser();
-		if (!user) {
-			throw redirect({ to: "/login" });
-		}
+		if (!user) return; // no user → render login form below
 
-		if ("role" in user && (user as { role?: unknown }).role === "admin") {
+		if (
+			user &&
+			typeof user === "object" &&
+			"role" in user &&
+			user.role === "admin"
+		) {
 			throw redirect({ to: "/admin/dashboard" });
 		}
 		throw redirect({ to: "/portal" });
@@ -18,5 +22,5 @@ export const Route = createFileRoute("/")({
 });
 
 function HomeComponent() {
-	return null;
+	return <LoginForm />;
 }

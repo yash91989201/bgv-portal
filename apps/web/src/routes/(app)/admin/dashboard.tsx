@@ -4,7 +4,7 @@ import AddCandidateModal from "@/components/admin/add-candidate-modal";
 import CandidateDirectory from "@/components/admin/candidate-directory";
 import StatsCards from "@/components/admin/stats-cards";
 
-export const Route = createFileRoute("/admin/dashboard")({
+export const Route = createFileRoute("/(app)/admin/dashboard")({
 	component: AdminDashboard,
 });
 
