@@ -5,7 +5,7 @@ import useEmblaCarousel, {
 
 import { cn } from "@bgv-portal/ui/lib/utils"
 import { Button } from "@bgv-portal/ui/components/button"
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
+import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react"
 
 type CarouselApi = UseEmblaCarouselType[1]
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>
@@ -183,7 +183,7 @@ function CarouselPrevious({
       variant={variant}
       size={size}
       className={cn(
-        "absolute touch-manipulation",
+        "absolute touch-manipulation rounded-full",
         orientation === "horizontal"
           ? "inset-y-0 -left-12 my-auto"
           : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
@@ -193,7 +193,7 @@ function CarouselPrevious({
       onClick={scrollPrev}
       {...props}
     >
-      <ChevronLeftIcon />
+      <IconChevronLeft />
       <span className="sr-only">Previous slide</span>
     </Button>
   )
@@ -213,7 +213,7 @@ function CarouselNext({
       variant={variant}
       size={size}
       className={cn(
-        "absolute touch-manipulation",
+        "absolute touch-manipulation rounded-full",
         orientation === "horizontal"
           ? "inset-y-0 -right-12 my-auto"
           : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
@@ -223,7 +223,7 @@ function CarouselNext({
       onClick={scrollNext}
       {...props}
     >
-      <ChevronRightIcon />
+      <IconChevronRight />
       <span className="sr-only">Next slide</span>
     </Button>
   )
