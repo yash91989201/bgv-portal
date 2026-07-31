@@ -8,7 +8,7 @@ export const Route = createFileRoute("/")({
 		if (!user) {
 			throw redirect({ to: "/login" });
 		}
-		// ponytail: role not typed until backend regen; runtime check
+
 		if ("role" in user && (user as { role?: unknown }).role === "admin") {
 			throw redirect({ to: "/admin/dashboard" });
 		}
@@ -18,6 +18,5 @@ export const Route = createFileRoute("/")({
 });
 
 function HomeComponent() {
-	// Never rendered — beforeLoad always redirects
 	return null;
 }

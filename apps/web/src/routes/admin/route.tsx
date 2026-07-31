@@ -1,11 +1,4 @@
 import {
-	Link,
-	Outlet,
-	createFileRoute,
-	redirect,
-	useLocation,
-} from "@tanstack/react-router";
-import {
 	Sidebar,
 	SidebarContent,
 	SidebarGroup,
@@ -19,6 +12,13 @@ import {
 	SidebarProvider,
 	SidebarTrigger,
 } from "@bgv-portal/ui/components/sidebar";
+import {
+	createFileRoute,
+	Link,
+	Outlet,
+	redirect,
+	useLocation,
+} from "@tanstack/react-router";
 
 import UserMenu from "@/components/user-menu";
 import { getAuthUser } from "@/lib/auth-user";
@@ -41,10 +41,10 @@ function AdminLayout() {
 	const location = useLocation();
 
 	return (
-		<SidebarProvider className="min-h-0 h-full">
+		<SidebarProvider className="h-full min-h-0">
 			<Sidebar>
 				<SidebarHeader>
-					<span className="px-2 text-lg font-semibold">BGV Portal</span>
+					<span className="px-2 font-semibold text-lg">BGV Portal</span>
 				</SidebarHeader>
 				<SidebarContent>
 					<SidebarGroup>
@@ -68,7 +68,7 @@ function AdminLayout() {
 			<SidebarInset className="overflow-auto">
 				<header className="flex items-center gap-2 border-b px-4 py-2">
 					<SidebarTrigger />
-					<h1 className="text-lg font-semibold">Admin Dashboard</h1>
+					<h1 className="font-semibold text-lg">Admin Dashboard</h1>
 					<div className="ml-auto">
 						<UserMenu />
 					</div>
