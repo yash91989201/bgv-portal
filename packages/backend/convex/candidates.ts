@@ -1,5 +1,4 @@
 import type { GenericCtx } from "@convex-dev/better-auth";
-import { paginationOptsValidator } from "convex/server";
 import { ConvexError, v } from "convex/values";
 import type { DataModel } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
@@ -111,14 +110,49 @@ export const createCandidate = mutation({
 
 export const listCandidates = query({
 	args: {
-		paginationOpts: paginationOptsValidator,
+		name: v.optional(v.string()),
+		positionDept: v.optional(v.string()),
+		stage: v.optional(stageValidator),
+		page: v.number(),
+		pageSize: v.optional(v.number()),
 	},
 	handler: async (ctx, args) => {
 		await requireAdmin(ctx);
-		return await ctx.db
-			.query("candidates")
-			.order("desc")
-			.paginate(args.paginationOpts);
+
+		const all = await ctx.db.query("candidates").order("desc").collect();
+
+		// --- filters ---
+		const nameFilter = args.name?.trim().toLowerCase();
+		const posFilter = args.positionDept?.trim().toLowerCase();
+		const stageFilter = args.stage;
+
+		const filtered = all.filter((c) => {
+			if (nameFilter) {
+				if (!c.fullName?.toLowerCase().includes(nameFilter)) return false;
+			}
+			if (posFilter) {
+				const designation = c.designationAppliedFor?.toLowerCase() ?? "";
+				const dept = c.offeredDepartment?.toLowerCase() ?? "";
+				if (!designation.includes(posFilter) && !dept.includes(posFilter))
+					return false;
+			}
+			if (stageFilter && c.currentStage !== stageFilter) return false;
+			return true;
+		});
+
+		// --- pagination ---
+		const totalCount = filtered.length;
+		const pageSize = Math.max(1, Math.min(50, Math.round(args.pageSize ?? 10)));
+		const totalPages = Math.ceil(totalCount / pageSize);
+		const page =
+			totalPages === 0
+				? 1
+				: Math.max(1, Math.min(Math.round(args.page), totalPages));
+
+		const start = (page - 1) * pageSize;
+		const items = filtered.slice(start, start + pageSize);
+
+		return { items, totalCount, page, pageSize, totalPages };
 	},
 });
 
