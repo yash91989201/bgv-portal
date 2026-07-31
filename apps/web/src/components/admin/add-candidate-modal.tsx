@@ -108,7 +108,13 @@ export default function AddCandidateModal() {
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger render={<Button />}>Add Candidate</DialogTrigger>
+			<DialogTrigger
+				render={
+					<Button className="bg-slate-900 text-white hover:bg-slate-800 rounded-full px-4 text-xs font-semibold uppercase tracking-wider" />
+				}
+			>
+				+ ADD CANDIDATE
+			</DialogTrigger>
 			<DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
 				<DialogHeader>
 					<DialogTitle>Add Candidate</DialogTitle>

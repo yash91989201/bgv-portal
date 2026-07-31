@@ -1,7 +1,7 @@
 import { api } from "@bgv-portal/backend/convex/_generated/api";
 import type { Id } from "@bgv-portal/backend/convex/_generated/dataModel";
 import { laterStages, type Stage } from "@bgv-portal/backend/convex/lib/stages";
-import { Badge } from "@bgv-portal/ui/components/badge";
+import { Avatar, AvatarFallback } from "@bgv-portal/ui/components/avatar";
 import { Button } from "@bgv-portal/ui/components/button";
 import { Input } from "@bgv-portal/ui/components/input";
 import {
@@ -19,9 +19,96 @@ import {
 	TableHeader,
 	TableRow,
 } from "@bgv-portal/ui/components/table";
+import {
+	flexRender,
+	getCoreRowModel,
+	useReactTable,
+	type ColumnDef,
+} from "@tanstack/react-table";
 import { useMutation, usePaginatedQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
+
+type Candidate = {
+	_id: Id<"candidates">;
+	fullName: string;
+	email: string;
+	designationAppliedFor: string;
+	offeredDepartment: string;
+	expectedLocation: string;
+	totalExperience: string;
+	currentStage: Stage;
+};
+
+const columns: ColumnDef<Candidate, unknown>[] = [
+	{
+		accessorKey: "fullName",
+		header: "CANDIDATE PROFILE",
+		cell: ({ row }) => (
+			<div className="flex items-center gap-3">
+				<Avatar size="sm">
+					<AvatarFallback className="bg-slate-100 text-slate-600 text-xs">
+						{row.original.fullName.charAt(0).toUpperCase()}
+					</AvatarFallback>
+				</Avatar>
+				<div>
+					<div className="font-medium">{row.original.fullName}</div>
+					<div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+						{row.original.email}
+					</div>
+				</div>
+			</div>
+		),
+	},
+	{
+		accessorKey: "designationAppliedFor",
+		header: "POSITION & DEPT",
+		cell: ({ row }) => (
+			<div>
+				<div className="font-medium">{row.original.designationAppliedFor}</div>
+				<div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+					{row.original.offeredDepartment}
+				</div>
+			</div>
+		),
+	},
+	{
+		accessorKey: "currentStage",
+		header: "CURRENT STAGE",
+		cell: ({ row }) => (
+			<span className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-medium">
+				<span className="h-2 w-2 rounded-full bg-blue-500" />
+				{row.original.currentStage}
+			</span>
+		),
+	},
+	{
+		accessorKey: "expectedLocation",
+		header: "LOCATION & EXP",
+		cell: ({ row }) => (
+			<div>
+				<div className="font-medium">{row.original.expectedLocation}</div>
+				<div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+					{row.original.totalExperience
+						? /year/i.test(row.original.totalExperience)
+							? row.original.totalExperience.toUpperCase()
+							: `${row.original.totalExperience} YEARS EXP`
+						: "—"}
+				</div>
+			</div>
+		),
+	},
+	{
+		accessorKey: "_id",
+		header: "ACTIONS",
+		cell: ({ row }) => (
+			<StageUpdate
+				candidateId={row.original._id}
+				currentStage={row.original.currentStage}
+			/>
+		),
+	},
+];
 
 export default function CandidateDirectory() {
 	const { results, status, loadMore } = usePaginatedQuery(
@@ -29,6 +116,12 @@ export default function CandidateDirectory() {
 		{},
 		{ initialNumItems: 10 },
 	);
+
+	const table = useReactTable({
+		data: results,
+		columns,
+		getCoreRowModel: getCoreRowModel(),
+	});
 
 	if (status === "LoadingFirstPage") {
 		return (
@@ -46,32 +139,35 @@ export default function CandidateDirectory() {
 
 	return (
 		<div className="space-y-4">
-			<div className="overflow-x-auto">
+			<div className="overflow-x-auto rounded-xl border bg-white shadow-sm">
 				<Table>
-					<TableHeader>
-						<TableRow>
-							<TableHead>Name</TableHead>
-							<TableHead>Designation Applied</TableHead>
-							<TableHead>Stage</TableHead>
-							<TableHead>Expected Location</TableHead>
-							<TableHead className="text-right">Actions</TableHead>
-						</TableRow>
+					<TableHeader className="bg-slate-50/80">
+						{table.getHeaderGroups().map((headerGroup) => (
+							<TableRow key={headerGroup.id} className="border-b">
+								{headerGroup.headers.map((header) => (
+									<TableHead
+										key={header.id}
+										className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground"
+									>
+										{header.isPlaceholder
+											? null
+											: flexRender(
+													header.column.columnDef.header,
+													header.getContext(),
+												)}
+									</TableHead>
+								))}
+							</TableRow>
+						))}
 					</TableHeader>
 					<TableBody>
-						{results.map((c) => (
-							<TableRow key={c._id}>
-								<TableCell className="font-medium">{c.fullName}</TableCell>
-								<TableCell>{c.designationAppliedFor}</TableCell>
-								<TableCell>
-									<Badge variant="secondary">{c.currentStage}</Badge>
-								</TableCell>
-								<TableCell>{c.expectedLocation}</TableCell>
-								<TableCell className="text-right">
-									<StageUpdate
-										candidateId={c._id}
-										currentStage={c.currentStage}
-									/>
-								</TableCell>
+						{table.getRowModel().rows.map((row) => (
+							<TableRow key={row.id} className="border-b last:border-0">
+								{row.getVisibleCells().map((cell) => (
+									<TableCell key={cell.id} className="py-3">
+										{flexRender(cell.column.columnDef.cell, cell.getContext())}
+									</TableCell>
+								))}
 							</TableRow>
 						))}
 					</TableBody>
@@ -100,7 +196,7 @@ function StageUpdate({
 
 	const stages = laterStages(currentStage);
 	if (stages.length === 0) {
-		return <Badge variant="outline">Final stage</Badge>;
+		return <span className="text-xs text-muted-foreground">Final stage</span>;
 	}
 
 	const handleSave = async () => {
@@ -125,14 +221,14 @@ function StageUpdate({
 	};
 
 	return (
-		<div className="flex items-center gap-2 justify-end">
+		<div className="flex items-center gap-2">
 			<Select
 				value={newStage}
 				onValueChange={(v) => {
 					if (v) setNewStage(v as Stage);
 				}}
 			>
-				<SelectTrigger className="w-[180px]">
+				<SelectTrigger className="w-[160px]">
 					<SelectValue placeholder="Move to…" />
 				</SelectTrigger>
 				<SelectContent>
@@ -147,7 +243,7 @@ function StageUpdate({
 				placeholder="Note…"
 				value={note}
 				onChange={(e) => setNote(e.target.value)}
-				className="w-[120px]"
+				className="w-[100px]"
 			/>
 			<Button size="sm" disabled={!newStage || saving} onClick={handleSave}>
 				{saving ? "…" : "Save"}

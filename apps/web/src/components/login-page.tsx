@@ -85,7 +85,7 @@ export default function LoginPage() {
 							<Building2 className="size-4 text-[#020B24]" strokeWidth={1.5} />
 						</div>
 						<div className="leading-tight">
-							<p className="font-semibold text-[12px] text-[#020B24] tracking-wide">
+							<p className="font-semibold text-[#020B24] text-[12px] tracking-wide">
 								KIEWIT CORPORATION
 							</p>
 							<p className="text-[10px] text-slate-400 tracking-[0.12em]">
@@ -94,7 +94,7 @@ export default function LoginPage() {
 						</div>
 					</div>
 
-					<h2 className="font-bold text-[1.75rem] text-[#0F172A] tracking-tight">
+					<h2 className="font-bold text-[#0F172A] text-[1.75rem] tracking-tight">
 						Welcome Back
 					</h2>
 					<p className="mt-1.5 mb-8 text-[14px] text-slate-500">
