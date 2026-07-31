@@ -8,6 +8,8 @@ RUN --mount=type=cache,target=/root/.bun/install/cache bun install
 
 ARG VITE_CONVEX_URL
 ENV VITE_CONVEX_URL=${VITE_CONVEX_URL}
+ARG VITE_CONVEX_SITE_URL
+ENV VITE_CONVEX_SITE_URL=${VITE_CONVEX_SITE_URL}
 ENV NODE_ENV=production
 RUN cd apps/web && bun run build
 ENV SKIP_ENV_VALIDATION=
