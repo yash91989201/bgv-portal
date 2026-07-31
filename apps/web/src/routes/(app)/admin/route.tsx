@@ -1,16 +1,5 @@
-import {
-	Sidebar,
-	SidebarContent,
-	SidebarFooter,
-	SidebarGroup,
-	SidebarGroupContent,
-	SidebarMenu,
-	SidebarMenuButton,
-	SidebarMenuItem,
-	SidebarHeader,
-	SidebarInset,
-	SidebarProvider,
-} from "@bgv-portal/ui/components/sidebar";
+import { api } from "@bgv-portal/backend/convex/_generated/api";
+import { Avatar, AvatarFallback } from "@bgv-portal/ui/components/avatar";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -19,17 +8,28 @@ import {
 	BreadcrumbSeparator,
 } from "@bgv-portal/ui/components/breadcrumb";
 import {
+	Sidebar,
+	SidebarContent,
+	SidebarFooter,
+	SidebarGroup,
+	SidebarGroupContent,
+	SidebarHeader,
+	SidebarInset,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
+	SidebarProvider,
+} from "@bgv-portal/ui/components/sidebar";
+import {
 	createFileRoute,
 	Link,
 	Outlet,
 	redirect,
 	useLocation,
 } from "@tanstack/react-router";
-import { LayoutGrid, Users, Search, LogOut } from "lucide-react";
-import type { CSSProperties } from "react";
-import { Avatar, AvatarFallback } from "@bgv-portal/ui/components/avatar";
 import { useQuery } from "convex/react";
-import { api } from "@bgv-portal/backend/convex/_generated/api";
+import { LayoutGrid, LogOut, Users } from "lucide-react";
+import type { CSSProperties } from "react";
 import { authClient } from "@/lib/auth-client";
 import { getAuthUser } from "@/lib/auth-user";
 
@@ -59,7 +59,6 @@ function AdminLayout() {
 	const user = useQuery(api.auth.getCurrentUser);
 
 	const navItems = [
-		{ to: "/admin/dashboard", icon: LayoutGrid, label: "Executive Overview" },
 		{ to: "/admin/dashboard", icon: Users, label: "Candidate Directory" },
 	];
 
@@ -86,8 +85,8 @@ function AdminLayout() {
 							<LayoutGrid className="h-5 w-5" />
 						</div>
 						<div>
-							<div className="text-sm font-bold tracking-wide">KIEWIT CORP</div>
-							<div className="text-[10px] font-medium uppercase tracking-widest text-slate-400">
+							<div className="font-bold text-sm tracking-wide">KIEWIT CORP</div>
+							<div className="font-medium text-[10px] text-slate-400 uppercase tracking-widest">
 								ENTERPRISE ATS
 							</div>
 						</div>
@@ -109,8 +108,8 @@ function AdminLayout() {
 											className={
 												location.pathname === to &&
 												label === "Executive Overview"
-													? "bg-blue-600 text-white hover:bg-blue-700 rounded-full"
-													: "text-slate-400 hover:text-white hover:bg-slate-800 rounded-full"
+													? "rounded-full bg-blue-600 text-white hover:bg-blue-700"
+													: "rounded-full text-slate-400 hover:bg-slate-800 hover:text-white"
 											}
 										>
 											<Icon className="h-4 w-4" />
@@ -131,10 +130,10 @@ function AdminLayout() {
 							</AvatarFallback>
 						</Avatar>
 						<div className="min-w-0 flex-1">
-							<div className="text-sm font-medium truncate text-white">
+							<div className="truncate font-medium text-sm text-white">
 								{user?.name ?? "Admin User"}
 							</div>
-							<div className="text-[10px] font-medium uppercase tracking-widest text-slate-400">
+							<div className="font-medium text-[10px] text-slate-400 uppercase tracking-widest">
 								HR ADMINISTRATOR
 							</div>
 						</div>
@@ -149,10 +148,10 @@ function AdminLayout() {
 								},
 							})
 						}
-						className="flex items-center gap-2 text-sm text-slate-400 hover:text-white mt-3"
+						className="mt-3 flex items-center gap-2 text-slate-400 text-sm hover:text-white"
 					>
 						<LogOut className="h-4 w-4" />
-						<span className="text-xs font-medium uppercase tracking-wider">
+						<span className="font-medium text-xs uppercase tracking-wider">
 							Sign Out
 						</span>
 					</button>
@@ -174,14 +173,6 @@ function AdminLayout() {
 							</BreadcrumbItem>
 						</BreadcrumbList>
 					</Breadcrumb>
-					<div className="relative">
-						<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-						<input
-							type="text"
-							placeholder="Global search..."
-							className="h-9 w-64 rounded-full border bg-gray-50 pl-9 pr-4 text-sm outline-none focus:ring-2 focus:ring-blue-500/20"
-						/>
-					</div>
 				</header>
 				<Outlet />
 			</SidebarInset>
