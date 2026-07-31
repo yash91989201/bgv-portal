@@ -1,10 +1,9 @@
-import { query, mutation } from "./_generated/server";
-import { v } from "convex/values";
-import { ConvexError } from "convex/values";
-import { paginationOptsValidator } from "convex/server";
-import { authComponent, createAuth } from "./auth";
 import type { GenericCtx } from "@convex-dev/better-auth";
+import { paginationOptsValidator } from "convex/server";
+import { ConvexError, v } from "convex/values";
 import type { DataModel } from "./_generated/dataModel";
+import { mutation, query } from "./_generated/server";
+import { authComponent, createAuth } from "./auth";
 import { isForwardTransition, type Stage } from "./lib/stages";
 
 // ponytail: duplicated from schema.ts — Convex requires explicit v.literal args in both places
