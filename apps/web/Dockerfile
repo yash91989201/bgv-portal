@@ -24,7 +24,7 @@ COPY packages/config/package.json ./packages/config/
 COPY packages/env/package.json ./packages/env/
 COPY packages/ui/package.json ./packages/ui/
 
-RUN bun install --frozen-lockfile
+RUN bun install
 
 # Sources required to build `web` (workspace packages are source-linked)
 COPY tsconfig.json ./
@@ -38,9 +38,9 @@ RUN test -n "$VITE_CONVEX_URL" || (echo "ERROR: VITE_CONVEX_URL build-arg is req
 RUN test -n "$VITE_CONVEX_SITE_URL" || (echo "ERROR: VITE_CONVEX_SITE_URL build-arg is required" >&2 && exit 1)
 
 ENV VITE_CONVEX_URL=$VITE_CONVEX_URL \
-    VITE_CONVEX_SITE_URL=$VITE_CONVEX_SITE_URL \
-    SKIP_ENV_VALIDATION=1 \
-    NITRO_PRESET=node_server
+  VITE_CONVEX_SITE_URL=$VITE_CONVEX_SITE_URL \
+  SKIP_ENV_VALIDATION=1 \
+  NITRO_PRESET=node_server
 
 WORKDIR /app/apps/web
 RUN bun run build
@@ -52,8 +52,8 @@ FROM node:24-slim AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production \
-    HOST=0.0.0.0 \
-    PORT=3000
+  HOST=0.0.0.0 \
+  PORT=3000
 
 # Nitro emits a mostly-standalone .output, but leaves `react` as a CJS external
 COPY --from=builder /app/apps/web/.output ./.output
