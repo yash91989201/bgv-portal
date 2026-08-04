@@ -1,16 +1,16 @@
-name: bgv-portal
-
 services:
   web:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
       args:
-        VITE_CONVEX_URL: ${VITE_CONVEX_URL:-}
-        VITE_CONVEX_SITE_URL: ${VITE_CONVEX_SITE_URL:-}
-    init: true
+        VITE_CONVEX_URL: ${VITE_CONVEX_URL}
+        VITE_CONVEX_SITE_URL: ${VITE_CONVEX_SITE_URL}
     ports:
-      - "3001:3001"
+      - "${WEB_PORT:-3001}:3000"
+    environment:
+      HOST: 0.0.0.0
+      PORT: "3000"
     env_file:
       - path: apps/web/.env
         required: false
@@ -20,10 +20,10 @@ services:
           "CMD",
           "node",
           "-e",
-          "fetch('http://localhost:3001/api/health').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))",
+          "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
         ]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 10s
+      start_period: 15s
     restart: unless-stopped

@@ -70,18 +70,44 @@ If you want to add app-specific blocks instead of shared primitives, run the sha
 
 ## Deployment
 
-### Docker Compose
+### Coolify (recommended)
+
+Deploy `apps/web` as a Dockerfile application:
+
+| Setting | Value |
+| --- | --- |
+| Base Directory | `/` (repo root) |
+| Dockerfile | `apps/web/Dockerfile` |
+| Port | `3000` |
+| Healthcheck Path | `/api/health` |
+| Build Args | `VITE_CONVEX_URL`, `VITE_CONVEX_SITE_URL` |
+
+Those `VITE_*` values are public Convex URLs and are **baked into the client bundle at image build time**. Changing them requires a rebuild, not just a restart.
+
+Convex itself stays on Convex Cloud — only the TanStack Start SSR app runs in Coolify.
+
+Runtime entrypoint (matches [TanStack Start Node/Docker docs](https://tanstack.com/start/latest/docs/framework/react/guide/hosting)):
+
+```bash
+node .output/server/index.mjs
+```
+
+### Docker Compose (local)
 
 - Target: web
-- Config: `docker-compose.yml` (app Dockerfiles live in `apps/*/Dockerfile`)
-- Build images: bun run docker:build
-- Start: bun run docker:up
-- Logs: bun run docker:logs
-- Stop: bun run docker:down
+- Config: `docker-compose.yml` (Dockerfile: `apps/web/Dockerfile`)
+- Build images: `bun run docker:build`
+- Start: `bun run docker:up`
+- Logs: `bun run docker:logs`
+- Stop: `bun run docker:down`
 
-Environment variables are read from each app's `.env` file (baked into web builds for public variables) and overridden in `docker-compose.yml` for container networking.
+Pass build args via env (or `apps/web/.env`):
 
-For more details, see the guide on [Deploying with Docker Compose](https://www.better-t-stack.dev/docs/guides/docker).
+```bash
+export VITE_CONVEX_URL=https://your-deployment.convex.cloud
+export VITE_CONVEX_SITE_URL=https://your-deployment.convex.site
+bun run docker:up
+```
 
 ## Git Hooks and Formatting
 
