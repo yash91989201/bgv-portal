@@ -71,19 +71,6 @@ export function LoginForm() {
 				<button
 					type="button"
 					role="tab"
-					aria-selected={portal === "admin"}
-					onClick={() => setPortal("admin")}
-					className={
-						portal === "admin"
-							? "rounded-md bg-white px-3 py-2.5 font-semibold text-[13px] text-slate-900 shadow-sm transition-all"
-							: "rounded-md px-3 py-2.5 font-medium text-[13px] text-slate-500 transition-all hover:text-slate-700"
-					}
-				>
-					Admin Portal
-				</button>
-				<button
-					type="button"
-					role="tab"
 					aria-selected={portal === "candidate"}
 					onClick={() => setPortal("candidate")}
 					className={
@@ -93,6 +80,19 @@ export function LoginForm() {
 					}
 				>
 					Candidate Portal
+				</button>
+				<button
+					type="button"
+					role="tab"
+					aria-selected={portal === "admin"}
+					onClick={() => setPortal("admin")}
+					className={
+						portal === "admin"
+							? "rounded-md bg-white px-3 py-2.5 font-semibold text-[13px] text-slate-900 shadow-sm transition-all"
+							: "rounded-md px-3 py-2.5 font-medium text-[13px] text-slate-500 transition-all hover:text-slate-700"
+					}
+				>
+					Admin Portal
 				</button>
 			</div>
 
@@ -142,7 +142,7 @@ export function LoginForm() {
 							</Label>
 							<button
 								type="button"
-								className="font-semibold text-[11px] text-[#2563EB] tracking-[0.06em] transition-colors hover:text-blue-700"
+								className="font-semibold text-[#2563EB] text-[11px] tracking-[0.06em] transition-colors hover:text-blue-700"
 							>
 								FORGOT PASSWORD?
 							</button>
