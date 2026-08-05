@@ -28,8 +28,9 @@ import {
 	useLocation,
 } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import { LayoutGrid, LogOut, Users } from "lucide-react";
+import { LogOut, Users } from "lucide-react";
 import type { CSSProperties } from "react";
+import { BrandLogo } from "@/components/brand-logo";
 import { authClient } from "@/lib/auth-client";
 import { getAuthUser } from "@/lib/auth-user";
 
@@ -81,9 +82,7 @@ function AdminLayout() {
 			<Sidebar>
 				<SidebarHeader className="px-4 py-5">
 					<div className="flex items-center gap-3">
-						<div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white">
-							<LayoutGrid className="h-5 w-5" />
-						</div>
+						<BrandLogo size="sm" />
 						<div>
 							<div className="font-bold text-sm tracking-wide">KIEWIT CORP</div>
 							<div className="font-medium text-[10px] text-slate-400 uppercase tracking-widest">

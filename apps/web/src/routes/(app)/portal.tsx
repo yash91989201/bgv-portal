@@ -20,7 +20,8 @@ import {
 } from "@bgv-portal/ui/components/tabs";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import { Building2, Check, LogOut } from "lucide-react";
+import { Check, LogOut } from "lucide-react";
+import { BrandLogo } from "@/components/brand-logo";
 import { authClient } from "@/lib/auth-client";
 import { getAuthUser } from "@/lib/auth-user";
 
@@ -54,9 +55,7 @@ function PortalPage() {
 			<header className="bg-[#0B1F3A]">
 				<div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3">
 					<div className="flex items-center gap-3">
-						<div className="flex size-10 items-center justify-center rounded-lg border-2 border-white/30 text-white">
-							<Building2 className="size-5" />
-						</div>
+						<BrandLogo />
 						<div>
 							<p className="font-bold text-sm leading-tight text-white tracking-wide">
 								KIEWIT CORPORATION

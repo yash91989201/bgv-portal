@@ -35,13 +35,22 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 				content: "width=device-width, initial-scale=1",
 			},
 			{
-				title: "BGV Portal",
+				title: "Kiewit BGV Portal",
 			},
 		],
 		links: [
 			{
 				rel: "stylesheet",
 				href: appCss,
+			},
+			{
+				rel: "icon",
+				href: "/logo.png",
+				type: "image/png",
+			},
+			{
+				rel: "apple-touch-icon",
+				href: "/logo.png",
 			},
 		],
 	}),

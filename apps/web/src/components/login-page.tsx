@@ -1,5 +1,4 @@
-import { Building2 } from "lucide-react";
-
+import { BrandLogo } from "@/components/brand-logo";
 import { LoginForm } from "@/components/login-form";
 
 export default function LoginPage() {
@@ -17,9 +16,7 @@ export default function LoginPage() {
 				<div className="relative z-10 flex h-full flex-col px-12 py-10 xl:px-16">
 					{/* Brand mark */}
 					<div className="flex items-center gap-3">
-						<div className="flex size-10 items-center justify-center rounded-lg border border-white/20 bg-white/5">
-							<Building2 className="size-5 text-white" strokeWidth={1.5} />
-						</div>
+						<BrandLogo />
 						<div className="leading-tight">
 							<p className="font-semibold text-[13px] text-white tracking-wide">
 								KIEWIT CORPORATION
@@ -60,7 +57,7 @@ export default function LoginPage() {
 
 						<h1 className="max-w-[20ch] font-bold text-[2.65rem] text-white leading-[1.15] tracking-tight xl:text-5xl">
 							Discover and hire the{" "}
-							<span className="text-[#38BDF8]">world&apos;s top talent.</span>
+							<span className="text-[#FDB913]">world&apos;s top talent.</span>
 						</h1>
 
 						<p className="mt-6 max-w-md text-[15px] text-slate-400 leading-relaxed">
@@ -81,9 +78,7 @@ export default function LoginPage() {
 				<div className="w-full max-w-[420px]">
 					{/* Mobile brand */}
 					<div className="mb-10 flex items-center gap-3 lg:hidden">
-						<div className="flex size-9 items-center justify-center rounded-lg border border-slate-200 bg-slate-50">
-							<Building2 className="size-4 text-[#020B24]" strokeWidth={1.5} />
-						</div>
+						<BrandLogo size="sm" />
 						<div className="leading-tight">
 							<p className="font-semibold text-[#020B24] text-[12px] tracking-wide">
 								KIEWIT CORPORATION
