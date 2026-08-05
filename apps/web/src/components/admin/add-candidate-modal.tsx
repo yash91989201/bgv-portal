@@ -104,7 +104,7 @@ const SECTIONS: FieldSection[] = [
 		],
 	},
 	{
-		group: "INITIAL LOGIN SETUP (OPTIONAL)",
+		group: "INITIAL LOGIN SETUP",
 		rows: [
 			{
 				cols: 3,
