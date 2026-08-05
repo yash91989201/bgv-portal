@@ -1,5 +1,6 @@
 import type { GenericCtx } from "@convex-dev/better-auth";
 import { ConvexError, v } from "convex/values";
+import { components } from "./_generated/api";
 import type { DataModel } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 import { authComponent, createAuth } from "./auth";
@@ -312,5 +313,86 @@ export const getMyStatusHistory = query({
 			.withIndex("by_candidateId", (q) => q.eq("candidateId", candidate._id))
 			.order("desc")
 			.collect();
+	},
+});
+
+// --- deleteCandidates ---
+
+export const deleteCandidates = mutation({
+	args: {
+		candidateIds: v.array(v.id("candidates")),
+	},
+	handler: async (ctx, args) => {
+		await requireAdmin(ctx);
+
+		if (args.candidateIds.length === 0) {
+			throw new ConvexError("No candidate IDs provided");
+		}
+		if (args.candidateIds.length > 50) {
+			throw new ConvexError("Cannot delete more than 50 candidates at once");
+		}
+
+		const auth = createAuth(ctx);
+		let headers: Headers;
+		try {
+			headers = await authComponent.getHeaders(ctx);
+		} catch (err: unknown) {
+			const msg = err instanceof Error ? err.message : String(err);
+			throw new ConvexError(`Failed to get auth headers: ${msg}`);
+		}
+
+		let deleted = 0;
+		for (const candidateId of args.candidateIds) {
+			const candidate = await ctx.db.get("candidates", candidateId);
+			if (!candidate) {
+				throw new ConvexError(`Candidate not found: ${candidateId}`);
+			}
+
+			// Reject deleting admin users — candidate.userId stores the Convex _id of the auth user document
+			const authUser: { role?: string | null } | null = await ctx.runQuery(
+				components.betterAuth.adapter.findOne,
+				{
+					model: "user",
+					where: [{ field: "_id", value: candidate.userId }],
+				},
+			);
+			if (authUser?.role === "admin") {
+				throw new ConvexError("Cannot delete admin users");
+			}
+
+			// 1. Delete all statusEvents for this candidate
+			const events = await ctx.db
+				.query("statusEvents")
+				.withIndex("by_candidateId", (q) => q.eq("candidateId", candidateId))
+				.collect();
+			for (const event of events) {
+				await ctx.db.delete(event._id);
+			}
+
+			// 2. Delete the candidate row
+			await ctx.db.delete(candidateId);
+
+			// 3. Remove the auth user
+			try {
+				await auth.api.removeUser({
+					body: { userId: candidate.userId },
+					headers,
+				});
+			} catch (err: unknown) {
+				let msg = String(err);
+				if (err && typeof err === "object") {
+					if ("body" in err && typeof err.body === "object" && err.body !== null && "message" in err.body) {
+						msg = String(err.body.message);
+					} else if ("message" in err) {
+						msg = String(err.message);
+					}
+				}
+				throw new ConvexError(`Failed to remove auth user: ${msg}`);
+			}
+
+			deleted++;
+		}
+
+		return { deleted };
 	},
 });

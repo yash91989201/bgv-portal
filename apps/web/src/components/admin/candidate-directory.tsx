@@ -1,8 +1,19 @@
 import { api } from "@bgv-portal/backend/convex/_generated/api";
 import type { Id } from "@bgv-portal/backend/convex/_generated/dataModel";
 import { STAGES, type Stage } from "@bgv-portal/backend/convex/lib/stages";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@bgv-portal/ui/components/alert-dialog";
 import { Avatar, AvatarFallback } from "@bgv-portal/ui/components/avatar";
 import { Button } from "@bgv-portal/ui/components/button";
+import { Checkbox } from "@bgv-portal/ui/components/checkbox";
 import { Input } from "@bgv-portal/ui/components/input";
 import {
 	Pagination,
@@ -27,16 +38,18 @@ import {
 	TableHeader,
 	TableRow,
 } from "@bgv-portal/ui/components/table";
-import { IconPencil, IconSearch, IconX } from "@tabler/icons-react";
+import { IconPencil, IconSearch, IconTrash, IconX } from "@tabler/icons-react";
 import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import {
 	type ColumnDef,
 	flexRender,
 	getCoreRowModel,
+	type RowSelectionState,
 	useReactTable,
 } from "@tanstack/react-table";
-import { useQuery } from "convex/react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useMutation, useQuery } from "convex/react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 import EditCandidateModal from "./edit-candidate-modal";
 
 const Route = getRouteApi("/(app)/admin/dashboard");
@@ -157,6 +170,24 @@ export default function CandidateDirectory() {
 	const [editingCandidateId, setEditingCandidateId] =
 		useState<Id<"candidates"> | null>(null);
 
+	// --- Delete state ---
+	const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+	const [deleteTarget, setDeleteTarget] = useState<{
+		ids: Id<"candidates">[];
+		names: string[];
+	} | null>(null);
+	const [isDeleting, setIsDeleting] = useState(false);
+
+	// Clear selection on page/filter changes
+	const filterKey = `${page}|${search.name ?? ""}|${search.position ?? ""}|${search.stage ?? ""}`;
+	const filterKeyRef = useRef(filterKey);
+	useEffect(() => {
+		if (filterKey !== filterKeyRef.current) {
+			filterKeyRef.current = filterKey;
+			setRowSelection({});
+		}
+	}, [filterKey]);
+
 	const result = useQuery(api.candidates.listCandidates, {
 		name: search.name || undefined,
 		positionDept: search.position || undefined,
@@ -165,81 +196,122 @@ export default function CandidateDirectory() {
 		pageSize: PAGE_SIZE,
 	});
 
-	const columns: ColumnDef<Candidate, unknown>[] = [
-		{
-			accessorKey: "fullName",
-			header: "CANDIDATE PROFILE",
-			cell: ({ row }) => (
-				<div className="flex items-center gap-3">
-					<Avatar size="sm">
-						<AvatarFallback className="bg-slate-100 text-slate-600 text-xs">
-							{row.original.fullName.charAt(0).toUpperCase()}
-						</AvatarFallback>
-					</Avatar>
-					<div>
-						<div className="font-medium">{row.original.fullName}</div>
-						<div className="text-[10px] text-muted-foreground uppercase tracking-wider">
-							{row.original.email}
+	const columns: ColumnDef<Candidate, unknown>[] = useMemo(
+		() => [
+			{
+				id: "select",
+				header: ({ table }) => (
+					<Checkbox
+						checked={table.getIsAllPageRowsSelected()}
+						indeterminate={table.getIsSomePageRowsSelected()}
+						onCheckedChange={(value) =>
+							table.toggleAllPageRowsSelected(!!value)
+						}
+						aria-label="Select all"
+					/>
+				),
+				cell: ({ row }) => (
+					<Checkbox
+						checked={row.getIsSelected()}
+						onCheckedChange={(value) => row.toggleSelected(!!value)}
+						aria-label={`Select ${row.original.fullName}`}
+					/>
+				),
+				size: 40,
+				enableSorting: false,
+				enableHiding: false,
+			},
+			{
+				accessorKey: "fullName",
+				header: "CANDIDATE PROFILE",
+				cell: ({ row }) => (
+					<div className="flex items-center gap-3">
+						<Avatar size="sm">
+							<AvatarFallback className="bg-slate-100 text-slate-600 text-xs">
+								{row.original.fullName.charAt(0).toUpperCase()}
+							</AvatarFallback>
+						</Avatar>
+						<div>
+							<div className="font-medium">{row.original.fullName}</div>
+							<div className="text-[10px] text-muted-foreground uppercase tracking-wider">
+								{row.original.email}
+							</div>
 						</div>
 					</div>
-				</div>
-			),
-		},
-		{
-			accessorKey: "designationAppliedFor",
-			header: "POSITION & DEPT",
-			cell: ({ row }) => (
-				<div>
-					<div className="font-medium">
-						{row.original.designationAppliedFor}
+				),
+			},
+			{
+				accessorKey: "designationAppliedFor",
+				header: "POSITION & DEPT",
+				cell: ({ row }) => (
+					<div>
+						<div className="font-medium">
+							{row.original.designationAppliedFor}
+						</div>
+						<div className="text-[10px] text-muted-foreground uppercase tracking-wider">
+							{row.original.offeredDepartment}
+						</div>
 					</div>
-					<div className="text-[10px] text-muted-foreground uppercase tracking-wider">
-						{row.original.offeredDepartment}
+				),
+			},
+			{
+				accessorKey: "currentStage",
+				header: "CURRENT STAGE",
+				cell: ({ row }) => (
+					<span className="inline-flex items-center gap-2 rounded-full border px-3 py-1 font-medium text-sm">
+						<span className="h-2 w-2 rounded-full bg-blue-500" />
+						{row.original.currentStage}
+					</span>
+				),
+			},
+			{
+				accessorKey: "expectedLocation",
+				header: "LOCATION & EXP",
+				cell: ({ row }) => (
+					<div>
+						<div className="font-medium">{row.original.expectedLocation}</div>
+						<div className="text-[10px] text-muted-foreground uppercase tracking-wider">
+							{row.original.totalExperience
+								? /year/i.test(row.original.totalExperience)
+									? row.original.totalExperience.toUpperCase()
+									: `${row.original.totalExperience} YEARS EXP`
+								: "—"}
+						</div>
 					</div>
-				</div>
-			),
-		},
-		{
-			accessorKey: "currentStage",
-			header: "CURRENT STAGE",
-			cell: ({ row }) => (
-				<span className="inline-flex items-center gap-2 rounded-full border px-3 py-1 font-medium text-sm">
-					<span className="h-2 w-2 rounded-full bg-blue-500" />
-					{row.original.currentStage}
-				</span>
-			),
-		},
-		{
-			accessorKey: "expectedLocation",
-			header: "LOCATION & EXP",
-			cell: ({ row }) => (
-				<div>
-					<div className="font-medium">{row.original.expectedLocation}</div>
-					<div className="text-[10px] text-muted-foreground uppercase tracking-wider">
-						{row.original.totalExperience
-							? /year/i.test(row.original.totalExperience)
-								? row.original.totalExperience.toUpperCase()
-								: `${row.original.totalExperience} YEARS EXP`
-							: "—"}
+				),
+			},
+			{
+				accessorKey: "_id",
+				header: "ACTIONS",
+				cell: ({ row }) => (
+					<div className="flex items-center gap-1">
+						<Button
+							variant="ghost"
+							size="icon"
+							className="h-9 w-9 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700"
+							onClick={() => setEditingCandidateId(row.original._id)}
+						>
+							<IconPencil className="size-4" />
+						</Button>
+						<Button
+							variant="ghost"
+							size="icon"
+							className="h-9 w-9 text-red-500 hover:bg-red-50 hover:text-red-600"
+							onClick={() =>
+								setDeleteTarget({
+									ids: [row.original._id],
+									names: [row.original.fullName],
+								})
+							}
+						>
+							<IconTrash className="size-4" />
+						</Button>
 					</div>
-				</div>
-			),
-		},
-		{
-			accessorKey: "_id",
-			header: "ACTIONS",
-			cell: ({ row }) => (
-				<Button
-					variant="ghost"
-					size="icon"
-					className="h-9 w-9 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700"
-					onClick={() => setEditingCandidateId(row.original._id)}
-				>
-					<IconPencil className="size-4" />
-				</Button>
-			),
-		},
-	];
+				),
+			},
+		],
+		[],
+	);
 
 	const isLoading = result === undefined;
 	const items = result?.items ?? [];
@@ -250,11 +322,42 @@ export default function CandidateDirectory() {
 		data: items,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
+		getRowId: (row) => row._id,
+		onRowSelectionChange: setRowSelection,
+		state: { rowSelection },
 	});
+
+	const selectedRows = table.getSelectedRowModel().rows;
+	const selectedCount = selectedRows.length;
 
 	const hasActiveFilters = !!(search.name || search.position || search.stage);
 	const startIdx = totalCount === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
 	const endIdx = Math.min(page * PAGE_SIZE, totalCount);
+
+	// --- Delete mutation ---
+	const deleteCandidates = useMutation(api.candidates.deleteCandidates);
+
+	const handleConfirmDelete = async () => {
+		if (!deleteTarget || isDeleting) return;
+		setIsDeleting(true);
+		const ids = deleteTarget.ids;
+		const count = ids.length;
+		try {
+			await deleteCandidates({ candidateIds: ids });
+			toast.success(
+				`Deleted ${count === 1 ? "candidate" : `${count} candidates`}.`,
+			);
+			setDeleteTarget(null);
+			setRowSelection({});
+		} catch (err) {
+			toast.error(err instanceof Error ? err.message : "Failed to delete");
+			// Keep selection usable for retry
+		} finally {
+			setIsDeleting(false);
+		}
+	};
+
+	const isBulkMode = selectedCount > 0;
 
 	return (
 		<div className="space-y-4">
@@ -303,6 +406,27 @@ export default function CandidateDirectory() {
 					</Button>
 				)}
 			</div>
+
+			{/* Bulk action bar */}
+			{isBulkMode && (
+				<div className="flex items-center justify-between rounded-lg border bg-slate-50 px-4 py-2">
+					<p className="text-slate-600 text-sm">
+						<span className="font-semibold">{selectedCount}</span> selected
+					</p>
+					<Button
+						variant="destructive"
+						size="sm"
+						onClick={() => {
+							const ids = selectedRows.map((r) => r.original._id);
+							const names = selectedRows.map((r) => r.original.fullName);
+							setDeleteTarget({ ids, names });
+						}}
+					>
+						<IconTrash className="mr-1 size-4" />
+						Delete selected
+					</Button>
+				</div>
+			)}
 
 			{/* Table */}
 			<div className="overflow-x-auto rounded-xl border bg-white shadow-sm">
@@ -436,6 +560,41 @@ export default function CandidateDirectory() {
 				open={editingCandidateId !== null}
 				onClose={() => setEditingCandidateId(null)}
 			/>
+
+			{/* Delete confirmation dialog */}
+			<AlertDialog
+				open={deleteTarget !== null}
+				onOpenChange={(open) => {
+					if (!open) {
+						if (isDeleting) return; // block close while deleting
+						setDeleteTarget(null);
+					}
+				}}
+			>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>
+							{deleteTarget && deleteTarget.ids.length === 1
+								? `Delete ${deleteTarget.names[0]}?`
+								: `Delete ${deleteTarget?.ids.length ?? 0} candidates?`}
+						</AlertDialogTitle>
+						<AlertDialogDescription>
+							Permanently removes profile, stage history, and login. This action
+							cannot be undone.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+						<AlertDialogAction
+							onClick={handleConfirmDelete}
+							disabled={isDeleting}
+							className="bg-red-600 text-white hover:bg-red-700"
+						>
+							{isDeleting ? "Deleting…" : "Delete"}
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 		</div>
 	);
 }
