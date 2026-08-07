@@ -57,10 +57,10 @@ function PortalPage() {
 					<div className="flex items-center gap-3">
 						<BrandLogo />
 						<div>
-							<p className="font-bold text-sm leading-tight text-white tracking-wide">
+							<p className="font-bold text-sm text-white leading-tight tracking-wide">
 								KIEWIT CORPORATION
 							</p>
-							<p className="text-[10px] leading-tight text-white/50 tracking-widest uppercase">
+							<p className="text-[10px] text-white/50 uppercase leading-tight tracking-widest">
 								CANDIDATE PORTAL
 							</p>
 						</div>
@@ -76,7 +76,7 @@ function PortalPage() {
 								},
 							});
 						}}
-						className="inline-flex items-center gap-1.5 rounded-md border border-white/20 bg-white/5 px-3 py-1.5 text-white text-xs font-medium uppercase tracking-wide transition-colors hover:bg-white/10"
+						className="inline-flex items-center gap-1.5 rounded-md border border-white/20 bg-white/5 px-3 py-1.5 font-medium text-white text-xs uppercase tracking-wide transition-colors hover:bg-white/10"
 					>
 						<LogOut className="size-3.5" />
 						Sign Out
@@ -106,9 +106,9 @@ function PortalPage() {
 					<>
 						{/* ── Welcome card ── */}
 						<div className="relative mb-8 overflow-hidden rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-							<div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-50/40 to-blue-100/60 pointer-events-none" />
+							<div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-blue-50/40 to-blue-100/60" />
 							<div className="relative">
-								<p className="mb-1 text-blue-600 text-xs font-semibold uppercase tracking-wider">
+								<p className="mb-1 font-semibold text-blue-600 text-xs uppercase tracking-wider">
 									Welcome Back
 								</p>
 								<h1 className="mb-2 font-bold text-3xl text-[#0B1F3A]">
@@ -123,12 +123,9 @@ function PortalPage() {
 									below.
 								</p>
 								<div className="flex flex-wrap gap-2">
-									<span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-blue-700 text-xs font-medium">
+									<span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 font-medium text-blue-700 text-xs">
 										<span className="size-1.5 rounded-full bg-blue-500" />
 										STAGE: {profile.currentStage}
-									</span>
-									<span className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-slate-600 text-xs font-medium">
-										EXPECTED COMPLETION: 3-5 Business Days
 									</span>
 								</div>
 							</div>
@@ -139,13 +136,13 @@ function PortalPage() {
 							<TabsList variant="line" className="border-slate-200 border-b">
 								<TabsTrigger
 									value="journey"
-									className="text-slate-500 uppercase tracking-wide text-xs data-active:text-blue-700 data-active:after:bg-blue-600"
+									className="text-slate-500 text-xs uppercase tracking-wide data-active:text-blue-700 data-active:after:bg-blue-600"
 								>
 									Application Journey
 								</TabsTrigger>
 								<TabsTrigger
 									value="profile"
-									className="text-slate-500 uppercase tracking-wide text-xs data-active:text-blue-700 data-active:after:bg-blue-600"
+									className="text-slate-500 text-xs uppercase tracking-wide data-active:text-blue-700 data-active:after:bg-blue-600"
 								>
 									My Profile Details
 								</TabsTrigger>
@@ -155,7 +152,7 @@ function PortalPage() {
 							<TabsContent value="journey">
 								<Card className="mt-4 border-slate-200 shadow-sm">
 									<CardHeader className="pb-4">
-										<CardTitle className="text-slate-500 text-xs font-semibold uppercase tracking-wider">
+										<CardTitle className="font-semibold text-slate-500 text-xs uppercase tracking-wider">
 											Application Journey
 										</CardTitle>
 									</CardHeader>
@@ -174,7 +171,7 @@ function PortalPage() {
 													<div key={stage} className="relative mb-8 last:mb-0">
 														{/* Circle indicator */}
 														<div
-															className={`absolute -left-8 top-0.5 z-10 flex size-6 items-center justify-center rounded-full border-2 ${
+															className={`absolute top-0.5 -left-8 z-10 flex size-6 items-center justify-center rounded-full border-2 ${
 																isCompleted
 																	? "border-green-500 bg-green-500"
 																	: isCurrent
@@ -204,13 +201,8 @@ function PortalPage() {
 																{stage}
 															</p>
 															{isCompleted && (
-																<p className="mt-0.5 text-green-600 text-xs font-medium uppercase">
+																<p className="mt-0.5 font-medium text-green-600 text-xs uppercase">
 																	Completed
-																</p>
-															)}
-															{isCurrent && (
-																<p className="mt-0.5 text-blue-600 text-xs font-medium">
-																	In Progress
 																</p>
 															)}
 															{event?._creationTime &&
@@ -244,7 +236,7 @@ function PortalPage() {
 											className="border-slate-200 shadow-sm"
 										>
 											<CardHeader className="pb-3">
-												<CardTitle className="text-slate-900 text-sm font-semibold">
+												<CardTitle className="font-semibold text-slate-900 text-sm">
 													{section.title}
 												</CardTitle>
 											</CardHeader>
